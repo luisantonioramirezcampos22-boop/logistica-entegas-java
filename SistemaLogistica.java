@@ -33,24 +33,30 @@ public class SistemaLogistica {
         return listaPaquetes;
     }
 
-    // Inteligencia de Asignación (Fase 3)
+    // Inteligencia de Asignación (Fase 3 - Combinando Reto 1 y Reto 3)
     public Repartidor buscarRepartidorOptimo(Paquete paquete) {
         Repartidor mejorRepartidor = null;
-        int menorPesoRuta = Integer.MAX_VALUE;
+        double menorTiempo = Double.MAX_VALUE; // Cambiado a double para manejar los tiempos de viaje
         int menorCargaPaquetes = Integer.MAX_VALUE;
 
         for (Repartidor r : repartidores) {
             if (!r.isDisponible()) continue;
 
-            // Calcula el peso de la ruta (distancia + tráfico debido al Reto 1)
+            // Reto 1: Calcula el peso de la ruta (distancia + tráfico)
             int pesoRuta = mapaCiudad.calcularDistanciaRuta(r.getZonaActual(), paquete.getDestino());
             if (pesoRuta == Integer.MAX_VALUE) continue;
 
-            if (pesoRuta < menorPesoRuta) {
-                menorPesoRuta = pesoRuta;
+            // Reto 3: Polimorfismo en acción. El vehículo define el tiempo final basado en el peso de la ruta
+            double tiempoViaje = r.getVehiculo().calcularTiempoViaje(pesoRuta);
+
+            // Criterio principal: Quien llegue más rápido (afectado por su vehículo y el tráfico)
+            if (tiempoViaje < menorTiempo) {
+                menorTiempo = tiempoViaje;
                 menorCargaPaquetes = r.getPaquetesAsignados().size();
                 mejorRepartidor = r;
-            } else if (pesoRuta == menorPesoRuta) {
+            } 
+            // Criterio de desempate: Si tardan lo mismo, elegir al que tenga menos paquetes asignados
+            else if (tiempoViaje == menorTiempo) {
                 if (r.getPaquetesAsignados().size() < menorCargaPaquetes) {
                     menorCargaPaquetes = r.getPaquetesAsignados().size();
                     mejorRepartidor = r;

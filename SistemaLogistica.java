@@ -131,8 +131,10 @@ public class SistemaLogistica {
             System.out.println("1. Registrar nuevo Cliente");
             System.out.println("2. Registrar Paquete (Asignación Inteligente)");
             System.out.println("3. Actualizar Tráfico de la Ciudad (Reto 1)");
-            System.out.println("4. Ver Reporte de Paquetes (Ordenados por Peso)");
-            System.out.println("5. Guardar y Salir");
+System.out.println("4. Cerrar/Abrir una Calle Temporalmente (Reto 2)"); // <-- NUEVA
+System.out.println("5. Ver Reporte de Paquetes (Ordenados por Peso)");
+System.out.println("6. Guardar y Salir");
+
             System.out.print("Seleccione una opción: ");
             
             try {
@@ -184,7 +186,20 @@ public class SistemaLogistica {
                     sistema.getMapaCiudad().actualizarTrafico(zo, zd, trafico);
                     break;
 
-                case 4:
+                case 4: // IMPLEMENTACIÓN RETO 2 EN EL MENÚ
+                    System.out.print("Ingrese Zona Origen de la calle a modificar: ");
+                    String origCierre = scanner.nextLine();
+                    System.out.print("Ingrese Zona Destino de la calle a modificar: ");
+                    String destCierre = scanner.nextLine();
+                    System.out.print("¿Desea CERRAR la calle? (true = Cerrar / false = Abrir): ");
+                    boolean cerrar = scanner.nextBoolean();
+                    scanner.nextLine(); // Limpiar buffer
+                    
+                    sistema.getMapaCiudad().setEstadoCalle(origCierre, destCierre, cerrar);
+                    break;
+
+
+                case 5:
                     System.out.println("\n--- REPORTE DE INVENTARIO POR PESO ---");
                     List<Paquete> ordenados = sistema.ordenarPaquetesPorPeso();
                     if(ordenados.isEmpty()) System.out.println("No hay paquetes registrados.");
@@ -194,7 +209,7 @@ public class SistemaLogistica {
                     }
                     break;
 
-                case 5:
+                case 6:
                     sistema.guardarDatos();
                     System.out.println("Saliendo del sistema de entregas. ¡Buen viaje!");
                     break;

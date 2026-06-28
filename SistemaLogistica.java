@@ -79,8 +79,9 @@ public class SistemaLogistica {
         }
     }
 
-    // Persistencia JSON en texto plano (Fase 1)
+        // Persistencia JSON en texto plano para todas las entidades (Fase 1)
     public void guardarDatos() {
+        // 1. GUARDAR CLIENTES
         try (PrintWriter out = new PrintWriter(new FileWriter("clientes.json"))) {
             out.println("[");
             int i = 0;
@@ -89,11 +90,48 @@ public class SistemaLogistica {
                         c.getId(), c.getNombre(), c.getDireccion(), (++i < clientes.size() ? "," : ""));
             }
             out.println("]");
-            System.out.println("Base de datos guardada en 'clientes.json'.");
+            System.out.println(">>> Persistencia: Datos guardados en 'clientes.json'.");
         } catch (IOException e) {
-            System.out.println("Error al guardar persistencia: " + e.getMessage());
+            System.out.println("Error al guardar clientes: " + e.getMessage());
+        }
+
+        // 2. GUARDAR PAQUETES
+        try (PrintWriter out = new PrintWriter(new FileWriter("paquetes.json"))) {
+            out.println("[");
+            int i = 0;
+            for (Paquete p : paquetes.values()) {
+                out.printf("  {\"codigo\":\"%s\", \"peso\":%.2f, \"destino\":\"%s\", \"estado\":\"%s\", \"clienteId\":\"%s\"}%s\n",
+                        p.getCodigo(), p.getPeso(), p.getDestino(), p.getEstado(), p.getClienteId(), (++i < paquetes.size() ? "," : ""));
+            }
+            out.println("]");
+            System.out.println(">>> Persistencia: Datos guardados en 'paquetes.json'.");
+        } catch (IOException e) {
+            System.out.println("Error al guardar paquetes: " + e.getMessage());
+        }
+
+        // 3. GUARDAR REPARTIDORES (Guardando el tipo de vehículo para polimorfismo)
+        try (PrintWriter out = new PrintWriter(new FileWriter("repartidores.json"))) {
+            out.println("[");
+            for (int i = 0; i < repartidores.size(); i++) {
+                Repartidor r = repartidores.get(i);
+                
+                StringBuilder sbPaquetes = new StringBuilder("[");
+                for (int j = 0; j < r.getPaquetesAsignados().size(); j++) {
+                    sbPaquetes.append("\"").append(r.getPaquetesAsignados().get(j)).append("\"");
+                    if (j < r.getPaquetesAsignados().size() - 1) sbPaquetes.append(",");
+                }
+                sbPaquetes.append("]");
+
+                out.printf("  {\"nombre\":\"%s\", \"zonaActual\":\"%s\", \"disponible\":%b, \"paquetesAsignados\":%s, \"tipoVehiculo\":\"%s\"}%s\n",
+                        r.getNombre(), r.getZonaActual(), r.isDisponible(), sbPaquetes.toString(), r.getVehiculo().getTipo(), (i < repartidores.size() - 1 ? "," : ""));
+            }
+            out.println("]");
+            System.out.println(">>> Persistencia: Datos guardados en 'repartidores.json'.");
+        } catch (IOException e) {
+            System.out.println("Error al guardar repartidores: " + e.getMessage());
         }
     }
+
 
     // Menu principal interactivo
     public static void main(String[] args) {

@@ -27,23 +27,7 @@ public class SistemaLogistica {
                     Paquete temp = listaPaquetes.get(j);
                     listaPaquetes.set(j, listaPaquetes.get(j + 1));
                     listaPaquetes.set(j + 1, temp);
-                    public void procesarAsignacionInteligente(Paquete paquete) {
-        Repartidor optimo = buscarRepartidorOptimo(paquete);
-        if (optimo != null) {
-            optimo.asignarPaquete(paquete.getCodigo());
-            paquete.setEstado("En ruta");
-            
-            // Calculamos el tiempo para la impresión en consola
-            int costoRuta = mapaCiudad.calcularDistanciaRuta(optimo.getZonaActual(), paquete.getDestino());
-            double tiempoEstimado = optimo.getVehiculo().calcularTiempoViaje(costoRuta);
-            
-            System.out.printf(">>> [ASIGNADO] Paquete %s asignado a %s (%s). Tiempo estimado de viaje: %.1f mins.\n", 
-                    paquete.getCodigo(), optimo.getNombre(), optimo.getVehiculo().getTipo(), tiempoEstimado);
-        } else {
-            System.out.printf(">>> [ALERTA] Sin repartidores disponibles para el destino: %s\n", paquete.getDestino());
-        }
-    }
-
+                }
             }
         }
         return listaPaquetes;
@@ -52,7 +36,7 @@ public class SistemaLogistica {
     // Inteligencia de Asignación (Fase 3 - Combinando Reto 1 y Reto 3)
     public Repartidor buscarRepartidorOptimo(Paquete paquete) {
         Repartidor mejorRepartidor = null;
-        double menorTiempo = Double.MAX_VALUE; // Cambiado a double para manejar los tiempos de viaje
+        double menorTiempo = Double.MAX_VALUE; 
         int menorCargaPaquetes = Integer.MAX_VALUE;
 
         for (Repartidor r : repartidores) {
@@ -62,17 +46,14 @@ public class SistemaLogistica {
             int pesoRuta = mapaCiudad.calcularDistanciaRuta(r.getZonaActual(), paquete.getDestino());
             if (pesoRuta == Integer.MAX_VALUE) continue;
 
-            // Reto 3: Polimorfismo en acción. El vehículo define el tiempo final basado en el peso de la ruta
+            // Reto 3: Polimorfismo. El vehículo define el tiempo final basado en el peso de la ruta
             double tiempoViaje = r.getVehiculo().calcularTiempoViaje(pesoRuta);
 
-            // Criterio principal: Quien llegue más rápido (afectado por su vehículo y el tráfico)
             if (tiempoViaje < menorTiempo) {
                 menorTiempo = tiempoViaje;
                 menorCargaPaquetes = r.getPaquetesAsignados().size();
                 mejorRepartidor = r;
-            } 
-            // Criterio de desempate: Si tardan lo mismo, elegir al que tenga menos paquetes asignados
-            else if (tiempoViaje == menorTiempo) {
+            } else if (tiempoViaje == menorTiempo) {
                 if (r.getPaquetesAsignados().size() < menorCargaPaquetes) {
                     menorCargaPaquetes = r.getPaquetesAsignados().size();
                     mejorRepartidor = r;
@@ -87,11 +68,14 @@ public class SistemaLogistica {
         if (optimo != null) {
             optimo.asignarPaquete(paquete.getCodigo());
             paquete.setEstado("En ruta");
-            System.out.printf(">>> [ASIGNADO] Paquete %s asignado a %s (%s). Costo de Ruta actual: %d unidades.\n", 
-                    paquete.getCodigo(), optimo.getNombre(), optimo.getVehiculo().getTipo(), 
-                    mapaCiudad.calcularDistanciaRuta(optimo.getZonaActual(), paquete.getDestino()));
+            
+            int costoRuta = mapaCiudad.calcularDistanciaRuta(optimo.getZonaActual(), paquete.getDestino());
+            double tiempoEstimado = optimo.getVehiculo().calcularTiempoViaje(costoRuta);
+            
+            System.out.printf(">>> [ASIGNADO] Paquete %s asignado a %s (%s). Tiempo estimado de viaje: %.1f mins.\n", 
+                    paquete.getCodigo(), optimo.getNombre(), optimo.getVehiculo().getTipo(), tiempoEstimado);
         } else {
-            System.out.printf(">>> [ALERTA] Sin repartidores disponibles para el destino: %s\n", paquete.getDestino());
+            System.out.printf(">>> [ALERTA] Sin repartidores disponibles o ruta bloqueada para el destino: %s\n", paquete.getDestino());
         }
     }
 
@@ -127,14 +111,15 @@ public class SistemaLogistica {
 
         int opcion = 0;
         do {
-            System.out.println("Ssistema De Logistica De Entregas Inteligente");
+            System.out.println("\n=================================================");
+            System.out.println("     SISTEMA DE LOGÍSTICA DE ENTREGAS SMART      ");
+            System.out.println("=================================================");
             System.out.println("1. Registrar nuevo Cliente");
             System.out.println("2. Registrar Paquete (Asignación Inteligente)");
             System.out.println("3. Actualizar Tráfico de la Ciudad (Reto 1)");
-System.out.println("4. Cerrar/Abrir una Calle Temporalmente (Reto 2)"); // <-- NUEVA
-System.out.println("5. Ver Reporte de Paquetes (Ordenados por Peso)");
-System.out.println("6. Guardar y Salir");
-
+            System.out.println("4. Cerrar/Abrir una Calle Temporalmente (Reto 2)");
+            System.out.println("5. Ver Reporte de Paquetes (Ordenados por Peso)");
+            System.out.println("6. Guardar y Salir");
             System.out.print("Seleccione una opción: ");
             
             try {
@@ -186,7 +171,7 @@ System.out.println("6. Guardar y Salir");
                     sistema.getMapaCiudad().actualizarTrafico(zo, zd, trafico);
                     break;
 
-                case 4: // IMPLEMENTACIÓN RETO 2 EN EL MENÚ
+                case 4:
                     System.out.print("Ingrese Zona Origen de la calle a modificar: ");
                     String origCierre = scanner.nextLine();
                     System.out.print("Ingrese Zona Destino de la calle a modificar: ");
@@ -197,7 +182,6 @@ System.out.println("6. Guardar y Salir");
                     
                     sistema.getMapaCiudad().setEstadoCalle(origCierre, destCierre, cerrar);
                     break;
-
 
                 case 5:
                     System.out.println("\n--- REPORTE DE INVENTARIO POR PESO ---");
@@ -217,7 +201,7 @@ System.out.println("6. Guardar y Salir");
                 default:
                     System.out.println("Opción no válida.");
             }
-        } while (opcion != 5);
+        } while (opcion != 6);
 
         scanner.close();
     }

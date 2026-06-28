@@ -17,7 +17,7 @@ public class SistemaLogistica {
     public void registrarRepartidor(Repartidor r) { repartidores.add(r); }
     public Grafo getMapaCiudad() { return mapaCiudad; }
 
-    // Ordenamiento Bubble Sort por peso (Fase 2)
+    // Ordenamiento Bubble Sort por peso 
     public List<Paquete> ordenarPaquetesPorPeso() {
         List<Paquete> listaPaquetes = new ArrayList<>(paquetes.values());
         int n = listaPaquetes.size();
@@ -33,7 +33,7 @@ public class SistemaLogistica {
         return listaPaquetes;
     }
 
-    // Inteligencia de Asignación (Fase 3 - Combinando Reto 1 y Reto 3)
+    // Inteligencia de Asignación 
     public Repartidor buscarRepartidorOptimo(Paquete paquete) {
         Repartidor mejorRepartidor = null;
         double menorTiempo = Double.MAX_VALUE; 
@@ -42,11 +42,11 @@ public class SistemaLogistica {
         for (Repartidor r : repartidores) {
             if (!r.isDisponible()) continue;
 
-            // Reto 1: Calcula el peso de la ruta (distancia + tráfico)
+            // Reto 1: Calcula el peso de la ruta 
             int pesoRuta = mapaCiudad.calcularDistanciaRuta(r.getZonaActual(), paquete.getDestino());
             if (pesoRuta == Integer.MAX_VALUE) continue;
 
-            // Reto 3: Polimorfismo. El vehículo define el tiempo final basado en el peso de la ruta
+            // Reto 3: Polimorfismo. 
             double tiempoViaje = r.getVehiculo().calcularTiempoViaje(pesoRuta);
 
             if (tiempoViaje < menorTiempo) {
@@ -72,10 +72,10 @@ public class SistemaLogistica {
             int costoRuta = mapaCiudad.calcularDistanciaRuta(optimo.getZonaActual(), paquete.getDestino());
             double tiempoEstimado = optimo.getVehiculo().calcularTiempoViaje(costoRuta);
             
-            System.out.printf(">>> [ASIGNADO] Paquete %s asignado a %s (%s). Tiempo estimado de viaje: %.1f mins.\n", 
+            System.out.printf("ASIGNADO: Paquete %s asignado a %s (%s). Tiempo estimado de viaje: %.1f mins.\n", 
                     paquete.getCodigo(), optimo.getNombre(), optimo.getVehiculo().getTipo(), tiempoEstimado);
         } else {
-            System.out.printf(">>> [ALERTA] Sin repartidores disponibles o ruta bloqueada para el destino: %s\n", paquete.getDestino());
+            System.out.printf("ALERTA: Sin repartidores disponibles o ruta bloqueada para el destino: %s\n", paquete.getDestino());
         }
     }
 
@@ -89,13 +89,13 @@ public class SistemaLogistica {
                         c.getId(), c.getNombre(), c.getDireccion(), (++i < clientes.size() ? "," : ""));
             }
             out.println("]");
-            System.out.println(">>> Base de datos guardada en 'clientes.json'.");
+            System.out.println("Base de datos guardada en 'clientes.json'.");
         } catch (IOException e) {
             System.out.println("Error al guardar persistencia: " + e.getMessage());
         }
     }
 
-    // MENÚ PRINCIPAL INTERACTIVO
+    // Menu principal interactivo
     public static void main(String[] args) {
         SistemaLogistica sistema = new SistemaLogistica();
         Scanner scanner = new Scanner(System.in);
@@ -111,9 +111,7 @@ public class SistemaLogistica {
 
         int opcion = 0;
         do {
-            System.out.println("\n=================================================");
-            System.out.println("     SISTEMA DE LOGÍSTICA DE ENTREGAS SMART      ");
-            System.out.println("=================================================");
+            System.out.println("\nSistema De Logistica De Entregas Inteligente");
             System.out.println("1. Registrar nuevo Cliente");
             System.out.println("2. Registrar Paquete (Asignación Inteligente)");
             System.out.println("3. Actualizar Tráfico de la Ciudad (Reto 1)");
@@ -141,7 +139,7 @@ public class SistemaLogistica {
                     String direccion = scanner.nextLine();
                     
                     sistema.registrarCliente(new Cliente(id, nombre, direccion));
-                    System.out.println(">>> Cliente registrado con éxito.");
+                    System.out.println("Cliente registrado con éxito.");
                     break;
 
                 case 2:
@@ -184,7 +182,7 @@ public class SistemaLogistica {
                     break;
 
                 case 5:
-                    System.out.println("\n--- REPORTE DE INVENTARIO POR PESO ---");
+                    System.out.println("\nReporte De Inventario Por Peso");
                     List<Paquete> ordenados = sistema.ordenarPaquetesPorPeso();
                     if(ordenados.isEmpty()) System.out.println("No hay paquetes registrados.");
                     for (Paquete p : ordenados) {

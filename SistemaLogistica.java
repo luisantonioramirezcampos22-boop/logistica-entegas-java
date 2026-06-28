@@ -27,7 +27,23 @@ public class SistemaLogistica {
                     Paquete temp = listaPaquetes.get(j);
                     listaPaquetes.set(j, listaPaquetes.get(j + 1));
                     listaPaquetes.set(j + 1, temp);
-                }
+                    public void procesarAsignacionInteligente(Paquete paquete) {
+        Repartidor optimo = buscarRepartidorOptimo(paquete);
+        if (optimo != null) {
+            optimo.asignarPaquete(paquete.getCodigo());
+            paquete.setEstado("En ruta");
+            
+            // Calculamos el tiempo para la impresión en consola
+            int costoRuta = mapaCiudad.calcularDistanciaRuta(optimo.getZonaActual(), paquete.getDestino());
+            double tiempoEstimado = optimo.getVehiculo().calcularTiempoViaje(costoRuta);
+            
+            System.out.printf(">>> [ASIGNADO] Paquete %s asignado a %s (%s). Tiempo estimado de viaje: %.1f mins.\n", 
+                    paquete.getCodigo(), optimo.getNombre(), optimo.getVehiculo().getTipo(), tiempoEstimado);
+        } else {
+            System.out.printf(">>> [ALERTA] Sin repartidores disponibles para el destino: %s\n", paquete.getDestino());
+        }
+    }
+
             }
         }
         return listaPaquetes;

@@ -74,13 +74,13 @@ public class Grafo {
         }
     }
 
-    // Búsqueda de rutas mediante DFS (Corregido para mayúsculas/minúsculas y Reto 2)
+    // Búsqueda de rutas mediante DFS 
     public boolean buscarRutaDFS(String actual, String destino, Set<String> visitados, List<String> ruta) {
         String act = actual.toLowerCase().trim();
         String dest = destino.toLowerCase().trim();
         
         visitados.add(act);
-        // Guardamos el nombre formateado estéticamente (Primera letra Mayúscula)
+        // Aqui se guarda el nombre formateado estéticamente
         String nombreFormateado = act.substring(0, 1).toUpperCase() + act.substring(1);
         ruta.add(nombreFormateado); 
 
@@ -106,7 +106,7 @@ public class Grafo {
         return false;
     }
 
-    // Calcula el costo considerando la fórmula del Reto 1
+    // Aqui se calcula el costo considerando la fórmula del Reto 1
     public int calcularDistanciaRuta(String actual, String destino) {
         if (actual == null || destino == null) return Integer.MAX_VALUE;
         

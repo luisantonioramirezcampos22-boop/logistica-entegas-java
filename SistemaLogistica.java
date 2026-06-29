@@ -81,7 +81,7 @@ public class SistemaLogistica {
 
         // Persistencia JSON en texto plano para todas las entidades (Fase 1)
     public void guardarDatos() {
-        // 1. GUARDAR CLIENTES
+        // 1. Guardar clientes
         try (PrintWriter out = new PrintWriter(new FileWriter("clientes.json"))) {
             out.println("[");
             int i = 0;
@@ -95,7 +95,7 @@ public class SistemaLogistica {
             System.out.println("Error al guardar clientes: " + e.getMessage());
         }
 
-        // 2. GUARDAR PAQUETES
+        // 2. Guardar paquetes
         try (PrintWriter out = new PrintWriter(new FileWriter("paquetes.json"))) {
             out.println("[");
             int i = 0;
@@ -109,7 +109,7 @@ public class SistemaLogistica {
             System.out.println("Error al guardar paquetes: " + e.getMessage());
         }
 
-        // 3. GUARDAR REPARTIDORES (Guardando el tipo de vehículo para polimorfismo)
+        // 3. Guardar repartidores (Guardando el tipo de vehículo para polimorfismo)
         try (PrintWriter out = new PrintWriter(new FileWriter("repartidores.json"))) {
             out.println("[");
             for (int i = 0; i < repartidores.size(); i++) {
@@ -129,6 +129,84 @@ public class SistemaLogistica {
             System.out.println(">>> Persistencia: Datos guardados en 'repartidores.json'.");
         } catch (IOException e) {
             System.out.println("Error al guardar repartidores: " + e.getMessage());
+        }
+    }
+
+    // Persistencia de carga de archivos de texto plano al iniciar el sistema (Fase 1)
+    public void cargarDatos() {
+        // 1. Cargar clientes
+        File fileClientes = new File("clientes.json");
+        if (fileClientes.exists()) {
+            try (BufferedReader in = new BufferedReader(new FileReader(fileClientes))) {
+                String linea;
+                while ((linea = in.readLine()) != null) {
+                    // Ignoramos los corchetes del arreglo JSON en texto plano
+                    if (linea.trim().equals("[") || linea.trim().equals("]")) continue;
+                    
+                    // Limpiamos la línea eliminando llaves y comas finales
+                    String limpia = linea.trim().replace("{", "").replace("}", "");
+                    if (limpia.endsWith(",")) limpia = limpia.substring(0, limpia.length() - 1);
+                    if (limpia.isEmpty()) continue;
+
+                    // Parseo básico de atributos por comillas
+                    String[] fragmentos = limpia.split(",");
+                    String id = "", nombre = "", direccion = "";
+                    for (String frag : fragmentos) {
+                        String[] par = frag.split(":");
+                        String llave = par[0].replace("\"", "").trim();
+                        String valor = par[1].replace("\"", "").trim();
+                        
+                        if (llave.equals("id")) id = valor;
+                        else if (llave.equals("nombre")) nombre = valor;
+                        else if (llave.equals("direccion")) direccion = valor;
+                    }
+                    if (!id.isEmpty()) {
+                        this.registrarCliente(new Cliente(id, nombre, direccion));
+                    }
+                }
+                System.out.println(">>> [PERSISTENCIA] Clientes recuperados con éxito desde 'clientes.json'.");
+            } catch (IOException e) {
+                System.out.println("Error al cargar clientes: " + e.getMessage());
+            }
+        }
+
+        // 2. Cargar paquetes
+        File filePaquetes = new File("paquetes.json");
+        if (filePaquetes.exists()) {
+            try (BufferedReader in = new BufferedReader(new FileReader(filePaquetes))) {
+                String linea;
+                while ((linea = in.readLine()) != null) {
+                    if (linea.trim().equals("[") || linea.trim().equals("]")) continue;
+                    
+                    String limpia = linea.trim().replace("{", "").replace("}", "");
+                    if (limpia.endsWith(",")) limpia = limpia.substring(0, limpia.length() - 1);
+                    if (limpia.isEmpty()) continue;
+
+                    String[] fragmentos = limpia.split(",");
+                    String codigo = "", destino = "", estado = "", clienteId = "";
+                    double peso = 0.0;
+
+                    for (String frag : fragmentos) {
+                        String[] par = frag.split(":");
+                        String llave = par[0].replace("\"", "").trim();
+                        String valor = par[1].replace("\"", "").trim();
+                        
+                        if (llave.equals("codigo")) codigo = valor;
+                        else if (llave.equals("destino")) destino = valor;
+                        else if (llave.equals("estado")) estado = valor;
+                        else if (llave.equals("clienteId")) clienteId = valor;
+                        else if (llave.equals("peso")) peso = Double.parseDouble(valor);
+                    }
+                    if (!codigo.isEmpty()) {
+                        Paquete p = new Paquete(codigo, peso, destino, clienteId);
+                        p.setEstado(estado);
+                        this.registrarPaquete(p); // Esto también lo vincula al historial del cliente
+                    }
+                }
+                System.out.println(">>> [PERSISTENCIA] Inventario de paquetes recuperado desde 'paquetes.json'.");
+            } catch (IOException e) {
+                System.out.println("Error al cargar paquetes: " + e.getMessage());
+            }
         }
     }
 

@@ -164,7 +164,7 @@ public class SistemaLogistica {
                         this.registrarCliente(new Cliente(id, nombre, direccion));
                     }
                 }
-                System.out.println(">>> [PERSISTENCIA] Clientes recuperados con éxito desde 'clientes.json'.");
+                System.out.println("PERSISTENCIA: Clientes recuperados con éxito desde 'clientes.json'.");
             } catch (IOException e) {
                 System.out.println("Error al cargar clientes: " + e.getMessage());
             }
@@ -203,7 +203,7 @@ public class SistemaLogistica {
                         this.registrarPaquete(p); // Esto también lo vincula al historial del cliente
                     }
                 }
-                System.out.println(">>> [PERSISTENCIA] Inventario de paquetes recuperado desde 'paquetes.json'.");
+                System.out.println("PERSISTENCIA: Inventario de paquetes recuperado desde 'paquetes.json'.");
             } catch (IOException e) {
                 System.out.println("Error al cargar paquetes: " + e.getMessage());
             }

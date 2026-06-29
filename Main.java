@@ -27,5 +27,4 @@ public static void main(String[] args) {
     // Elena (Camión) está en Zona Sur (más cerca de Zona Este) -> Debería quedarse este paquete
     sistema.procesarAsignacionInteligente(paqueteEste);
     
-    System.out.println("\n=================================================");
 }

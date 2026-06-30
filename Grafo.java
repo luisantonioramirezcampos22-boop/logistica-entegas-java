@@ -53,7 +53,7 @@ public class Grafo {
         if (adjacencia.containsKey(o) && adjacencia.get(o).containsKey(d)) {
             adjacencia.get(o).get(d).trafico = nivelTrafico;
             adjacencia.get(d).get(o).trafico = nivelTrafico;
-            System.out.printf(">>> [TRÁFICO] Tráfico actualizado a (+%d) entre '%s' y '%s'.\n", nivelTrafico, origen, destino);
+            System.out.printf("TRÁFICO: Tráfico actualizado a (+%d) entre '%s' y '%s'.\n", nivelTrafico, origen, destino);
         } else {
             System.out.println(">>> Error: No existe una conexión entre esas zonas.");
         }
@@ -68,7 +68,7 @@ public class Grafo {
             adjacencia.get(o).get(d).estaCerrada = cerrar;
             adjacencia.get(d).get(o).estaCerrada = cerrar;
             String estado = cerrar ? "CERRADA temporalmente" : "ABIERTA nuevamente";
-            System.out.printf(">>> [RETO 2] La calle entre '%s' y '%s' ahora está %s.\n", origen, destino, estado);
+            System.out.printf("La calle entre '%s' y '%s' ahora está %s.\n", origen, destino, estado);
         } else {
             System.out.println(">>> Error: No existe una conexión entre esas zonas.");
         }
